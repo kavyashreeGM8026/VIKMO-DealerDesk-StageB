@@ -1,4 +1,4 @@
-"""Gemini tool-calling adapter for DealerDesk."""
+﻿"""Gemini tool-calling adapter for DealerDesk."""
 import json
 import logging
 
@@ -92,3 +92,4 @@ def generate_turn(message, history, execute):
             responses.append(types.Part.from_function_response(name=name, response={"result": result}))
         contents.append(types.Content(role="user", parts=responses))
     raise RuntimeError("Gemini exceeded the maximum number of tool-calling rounds.")
+
