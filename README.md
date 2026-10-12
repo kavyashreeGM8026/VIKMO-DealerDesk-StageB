@@ -44,12 +44,12 @@ The response follows the API contract: `reply`, `cited_skus`, `tool_calls`, and 
 ### Gemini configuration
 
 - Provider: Google Gemini API via the `google-genai` Python SDK.
-- Default model: `gemini-3.8-flash` (stable model listed in Google's official Gemini model documentation; availability still depends on your API key/project).
+- Development model: `gemini-3.5-flash-lite` (tested in the local development environment).
 - `GEMINI_API_KEY`: your private key from Google AI Studio.
-- `GEMINI_MODEL`: optional model override.
+- `GEMINI_MODEL`: optional model override; configure a model supported by your API key and project.
 - `GEMINI_TIMEOUT_MS`: request timeout in milliseconds; defaults to `45000`.
 
-Verify model access with your own key before relying on live requests. Do not paste your key into source code, tests, or chat logs.
+The grader supplies its own API key, so verify model availability in that environment. Never commit `.env` or expose API keys in source code, tests, or logs.
 
 ### Conversation memory limitations
 
@@ -74,7 +74,7 @@ python manage.py test
 ### Manual live test
 
 1. Put your real key in the private `.env` as `GEMINI_API_KEY=...`.
-2. Confirm `GEMINI_MODEL=gemini-3.8-flash` is available for your API key, or set a supported model.
+2. Verify that the model configured in `.env` is supported by your API key and project.
 3. Start the server and use an existing seeded dealer ID:
 
 ```powershell
@@ -87,3 +87,7 @@ Do not use an order-creation request for the first live test. Inspect the return
 ## Other APIs and contract
 
 `API_CONTRACT.md` is the authoritative source for endpoint paths, fields, status codes, and the forecasting/reorder formula. Keep the files in `data/` unchanged. The grader installs dependencies on Linux, runs migrations and `seed_data` twice, and then starts Django.
+
+### Catalogue retrieval approach
+
+The `search_parts` tool uses PostgreSQL case-insensitive text matching across SKU, product name, brand, category, and vehicle fitment. It also supports a vehicle filter and limits results to five products. This lightweight retrieval approach avoids maintaining a separate embedding index and keeps results grounded in the live catalogue. It works well for direct product terms and vehicle names, but may miss semantically related queries that use different wording. An embedding-based retriever could improve semantic matching in a future iteration.
